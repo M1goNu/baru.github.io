@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem(userTransactionsKey, JSON.stringify([]));
         }
 
-        window.location.href = "index.html";
+        window.location.href = "menu.html";
     });
 });
 
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem(userTransactionsKey, JSON.stringify(transactions));
                 alert('Data transaksi berhasil ditambahkan.'); 
                 form.reset();
-                window.location.href = "index.html";
+                window.location.href = "menu.html";
             }
         } else {
             alert('Harap isi semua kolom form dan pilih kategori.');
@@ -148,7 +148,7 @@ function formatBalance(balance) {
 }
 
 
-//main.html
+//menu.html
 var swiper = new Swiper('.swiper-container', {
     loop: true, 
     navigation: {
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = document.querySelector('form');
         form.reset();
 
-        window.location.href = 'login.html'; 
+        window.location.href = 'index.html'; 
     });
 });
 
