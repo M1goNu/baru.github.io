@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem(userTransactionsKey, JSON.stringify([]));
         }
 
-        window.location.href = "main.html";
+        window.location.href = "menu.html";
     });
 });
 
@@ -57,19 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 type: transactionType,
                 category: transactionCategory
             };
-
-            // Check if the transaction type is outcome and if the balance is sufficient
             if (transaction.type === 'outcome' && transaction.nominal > currentBalance) {
-                // No need to add the transaction if balance is insufficient, just display notification
                 console.log('Insufficient balance to cover the transaction:', transactionName);
                 window.alert('Insufficient balance to cover the transaction: ' + transactionName);
             } else {
-                // Add the transaction if the balance is sufficient or if it's an income transaction
                 transactions.push(transaction);
                 localStorage.setItem(userTransactionsKey, JSON.stringify(transactions));
                 alert('Data transaksi berhasil ditambahkan.'); 
                 form.reset();
-                window.location.href = "main.html";
+                window.location.href = "menu.html";
             }
         } else {
             alert('Harap isi semua kolom form dan pilih kategori.');
@@ -81,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const transactionDataDiv = document.getElementById('transactionData');
     const usernameDisplay = document.getElementById('usernameDisplay');
     const balanceDisplay = document.getElementById('balanceDisplay');
-    const formattedBalanceDisplay = document.getElementById('formattedBalanceDisplay'); // Assuming you have an element with id 'formattedBalanceDisplay'
+    const formattedBalanceDisplay = document.getElementById('formattedBalanceDisplay'); 
 
     const username = sessionStorage.getItem('username');
     if (username) {
@@ -120,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const balance = calculateBalance(validTransactions);
                 const formattedBalance = formatBalance(balance);
-                balanceDisplay.textContent = 'Your balance: Rp ' + formattedBalance; // Display balance
-                formattedBalanceDisplay.textContent = 'Formatted balance: ' + formattedBalance; // Display formatted balance
+                balanceDisplay.textContent = 'Your balance: Rp ' + formattedBalance;
+                formattedBalanceDisplay.textContent = 'Formatted balance: ' + formattedBalance; 
             } else {
                 transactionDataDiv.textContent = 'No transactions to display.';
                 balanceDisplay.textContent = 'Your balance: Rp 0';
@@ -187,10 +183,8 @@ document.addEventListener('DOMContentLoaded', function () {
         let currentBalance = 0;
         
         transactions.forEach(function (transaction) {
-            // Calculate the balance with the current transaction
             const newBalance = transaction.type === 'income' ? currentBalance + transaction.nominal : currentBalance - transaction.nominal;
 
-            // Check if the new balance is non-negative for outcome transactions
             if (transaction.type === 'income' || newBalance >= 0) {
                 validTransactions.push(transaction);
                 currentBalance = newBalance;
@@ -198,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (validTransactions.length > 0) {
-            transactionDataDiv.innerHTML = ''; // Clear previous transactions
+            transactionDataDiv.innerHTML = ''; 
             validTransactions.forEach(function (transaction, index) {
                 const backgroundColor = transaction.type === 'income' ? 'lightgreen' : 'lightcoral';
 
@@ -213,10 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 transactionDataDiv.innerHTML += transactionHTML;
             });
 
-            // Display the current balance
             balanceDisplay.textContent = 'Your balance: Rp ' + currentBalance;
             
-            // Format the balance for display
             const formattedBalance = formatBalance(currentBalance);
             formattedBalanceDisplay.textContent = 'Formatted balance: ' + formattedBalance;
         }
@@ -228,17 +220,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var resetButton = document.getElementById('resetButton');
 
-    // Add event listener to reset button
     resetButton.addEventListener('click', function () {
-        // Clear all data from local storage
+
         localStorage.clear();
 
-        // Reset the form
         var form = document.querySelector('form');
         form.reset();
 
-        // Redirect back to the login page
-        window.location.href = 'login.html'; // Replace 'login.html' with your login page URL
+        window.location.href = 'index.html'; 
     });
 });
 
