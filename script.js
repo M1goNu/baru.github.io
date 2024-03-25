@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem(userTransactionsKey, JSON.stringify([]));
         }
 
-        window.location.href = "menu.html";
+        window.location.href = "main.html";
     });
 });
 
@@ -58,15 +58,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 category: transactionCategory
             };
 
+            // Check if the transaction type is outcome and if the balance is sufficient
             if (transaction.type === 'outcome' && transaction.nominal > currentBalance) {
+                // No need to add the transaction if balance is insufficient, just display notification
                 console.log('Insufficient balance to cover the transaction:', transactionName);
                 window.alert('Insufficient balance to cover the transaction: ' + transactionName);
             } else {
+                // Add the transaction if the balance is sufficient or if it's an income transaction
                 transactions.push(transaction);
                 localStorage.setItem(userTransactionsKey, JSON.stringify(transactions));
                 alert('Data transaksi berhasil ditambahkan.'); 
                 form.reset();
-                window.location.href = "menu.html";
+                window.location.href = "main.html";
             }
         } else {
             alert('Harap isi semua kolom form dan pilih kategori.');
@@ -78,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const transactionDataDiv = document.getElementById('transactionData');
     const usernameDisplay = document.getElementById('usernameDisplay');
     const balanceDisplay = document.getElementById('balanceDisplay');
+    const formattedBalanceDisplay = document.getElementById('formattedBalanceDisplay'); // Assuming you have an element with id 'formattedBalanceDisplay'
 
     const username = sessionStorage.getItem('username');
     if (username) {
@@ -91,7 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             transactions.forEach(function (transaction) {
                 const currentTransactions = validTransactions.concat(transaction);
                 const balance = calculateBalance(currentTransactions);
-
+                console.log('Transaction:', transaction);
+                console.log('Current balance after processing transaction:', balance);
                 if (transaction.type === 'income' || transaction.nominal <= balance) {
                     validTransactions.push(transaction);
                 }
@@ -99,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (validTransactions.length > 0) {
                 validTransactions.forEach(function (transaction, index) {
+            
                     const backgroundColor = transaction.type === 'income' ? 'lightgreen' : 'lightcoral';
 
                     const transactionHTML = `
@@ -109,20 +115,22 @@ document.addEventListener('DOMContentLoaded', function () {
                             <p><strong>Category:</strong> ${transaction.category}</p>
                         </div>
                     `;
-
                     transactionDataDiv.innerHTML += transactionHTML;
                 });
 
                 const balance = calculateBalance(validTransactions);
                 const formattedBalance = formatBalance(balance);
-                balanceDisplay.textContent = 'Your balance: Rp ' + formattedBalance;
+                balanceDisplay.textContent = 'Your balance: Rp ' + formattedBalance; // Display balance
+                formattedBalanceDisplay.textContent = 'Formatted balance: ' + formattedBalance; // Display formatted balance
             } else {
                 transactionDataDiv.textContent = 'No transactions to display.';
                 balanceDisplay.textContent = 'Your balance: Rp 0';
+                formattedBalanceDisplay.textContent = 'Formatted balance: 0';
             }
         } else {
             transactionDataDiv.textContent = 'No transactions yet.';
             balanceDisplay.textContent = 'Your balance: Rp 0';
+            formattedBalanceDisplay.textContent = 'Formatted balance: 0';
         }
     }
 });
@@ -136,19 +144,21 @@ function calculateBalance(transactions) {
             if (balance >= transaction.nominal) {
                 balance -= transaction.nominal;
             } else {
-              console.log('Insufficient funds to cover the transaction:', transaction.name);
+                console.log('Insufficient funds to cover the transaction:', transaction);
             }
         }
     });
+    console.log('Current balance:', balance);
     return balance;
 }
+
 
 function formatBalance(balance) {
     return Math.abs(balance); 
 }
 
 
-//menu.html
+//main.html
 var swiper = new Swiper('.swiper-container', {
     loop: true, 
     navigation: {
@@ -162,47 +172,73 @@ var swiper = new Swiper('.swiper-container', {
 document.addEventListener('DOMContentLoaded', function () {
     const transactions = JSON.parse(localStorage.getItem("transactions_" + sessionStorage.getItem("username"))) || [];
 
-    const categoryMap = {};
-    transactions.forEach(transaction => {
-        const category = transaction.type;
-        const nominal = transaction.nominal;
-        if (!categoryMap[category]) {
-            categoryMap[category] = 0;
+    const transactionDataDiv = document.getElementById('transactionData');
+    const balanceDisplay = document.getElementById('balanceDisplay');
+    const formattedBalanceDisplay = document.getElementById('formattedBalanceDisplay');
+
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    const username = sessionStorage.getItem('username');
+    if (username) {
+        usernameDisplay.textContent = 'Welcome, ' + username + '!';
+    }
+
+    if (transactions.length > 0) {
+        let validTransactions = [];
+        let currentBalance = 0;
+        
+        transactions.forEach(function (transaction) {
+            // Calculate the balance with the current transaction
+            const newBalance = transaction.type === 'income' ? currentBalance + transaction.nominal : currentBalance - transaction.nominal;
+
+            // Check if the new balance is non-negative for outcome transactions
+            if (transaction.type === 'income' || newBalance >= 0) {
+                validTransactions.push(transaction);
+                currentBalance = newBalance;
+            }
+        });
+
+        if (validTransactions.length > 0) {
+            transactionDataDiv.innerHTML = ''; // Clear previous transactions
+            validTransactions.forEach(function (transaction, index) {
+                const backgroundColor = transaction.type === 'income' ? 'lightgreen' : 'lightcoral';
+
+                const transactionHTML = `
+                    <div class="transaction" style="background-color: ${backgroundColor};">
+                        <p><strong>Type:</strong> ${transaction.type}</p>
+                        <p><strong>Name:</strong> ${transaction.name}</p>
+                        <p><strong>Nominal:</strong> ${transaction.nominal}</p>
+                        <p><strong>Category:</strong> ${transaction.category}</p>
+                    </div>
+                `;
+                transactionDataDiv.innerHTML += transactionHTML;
+            });
+
+            // Display the current balance
+            balanceDisplay.textContent = 'Your balance: Rp ' + currentBalance;
+            
+            // Format the balance for display
+            const formattedBalance = formatBalance(currentBalance);
+            formattedBalanceDisplay.textContent = 'Formatted balance: ' + formattedBalance;
         }
-        categoryMap[category] += nominal;
-    });
+    } else {
+        transactionDataDiv.textContent = 'No transactions yet.';
+        balanceDisplay.textContent = 'Your balance: Rp 0';
+        formattedBalanceDisplay.textContent = 'Formatted balance: 0';
+    }
 
-    const labels = Object.keys(categoryMap);
-    const data = Object.values(categoryMap);
-
-    const backgroundColors = labels.map(type => {
-        return type === 'income' ? 'blue' : 'red';
-    });
-
-    const ctx = document.getElementById('expenseChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: backgroundColors
-            }]
-        },
-        options: {
-            responsive: false,
-            maintainAspectRatio: false
-        }
-    });
     var resetButton = document.getElementById('resetButton');
 
+    // Add event listener to reset button
     resetButton.addEventListener('click', function () {
+        // Clear all data from local storage
         localStorage.clear();
 
+        // Reset the form
         var form = document.querySelector('form');
         form.reset();
 
-        window.location.href = 'index.html'; 
+        // Redirect back to the login page
+        window.location.href = 'login.html'; // Replace 'login.html' with your login page URL
     });
 });
 
