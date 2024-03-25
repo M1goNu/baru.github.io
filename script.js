@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem(userTransactionsKey, JSON.stringify([]));
         }
 
-        window.location.href = "main.html";
+        window.location.href = "index.html";
     });
 });
 
@@ -58,18 +58,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 category: transactionCategory
             };
 
-            // Check if the transaction type is outcome and if the balance is sufficient
             if (transaction.type === 'outcome' && transaction.nominal > currentBalance) {
-                // No need to add the transaction if balance is insufficient, just display notification
                 console.log('Insufficient balance to cover the transaction:', transactionName);
                 window.alert('Insufficient balance to cover the transaction: ' + transactionName);
             } else {
-                // Add the transaction if the balance is sufficient or if it's an income transaction
                 transactions.push(transaction);
                 localStorage.setItem(userTransactionsKey, JSON.stringify(transactions));
                 alert('Data transaksi berhasil ditambahkan.'); 
                 form.reset();
-                window.location.href = "main.html";
+                window.location.href = "index.html";
             }
         } else {
             alert('Harap isi semua kolom form dan pilih kategori.');
@@ -92,11 +89,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (transactions.length > 0) {
             let validTransactions = [];
             transactions.forEach(function (transaction) {
-                // Calculate the balance with the current transaction
                 const currentTransactions = validTransactions.concat(transaction);
                 const balance = calculateBalance(currentTransactions);
 
-                // Check if the transaction type is outcome and if it's within balance
                 if (transaction.type === 'income' || transaction.nominal <= balance) {
                     validTransactions.push(transaction);
                 }
@@ -104,10 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (validTransactions.length > 0) {
                 validTransactions.forEach(function (transaction, index) {
-                    // Determine background color based on transaction type
                     const backgroundColor = transaction.type === 'income' ? 'lightgreen' : 'lightcoral';
 
-                    // Construct transaction HTML with dynamic background color
                     const transactionHTML = `
                         <div class="transaction" style="background-color: ${backgroundColor};">
                             <p><strong>Type:</strong> ${transaction.type}</p>
@@ -117,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     `;
 
-                    // Append transaction HTML to transactionDataDiv
                     transactionDataDiv.innerHTML += transactionHTML;
                 });
 
@@ -141,11 +133,9 @@ function calculateBalance(transactions) {
         if (transaction.type === 'income') {
             balance += transaction.nominal;
         } else {
-            // Check if the balance is sufficient to cover the transaction
             if (balance >= transaction.nominal) {
                 balance -= transaction.nominal;
             } else {
-                // If the balance is insufficient, do not decrease it further
               console.log('Insufficient funds to cover the transaction:', transaction.name);
             }
         }
@@ -206,17 +196,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     var resetButton = document.getElementById('resetButton');
 
-    // Add event listener to reset button
     resetButton.addEventListener('click', function () {
-        // Clear all data from local storage
         localStorage.clear();
 
-        // Reset the form
         var form = document.querySelector('form');
         form.reset();
 
-        // Redirect back to the login page
-        window.location.href = 'login.html'; // Replace 'login.html' with your login page URL
+        window.location.href = 'login.html'; 
     });
 });
 
